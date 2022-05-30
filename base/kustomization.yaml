@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+- deploy.yaml
+
+images:
+- name: nginx
+  newName: nginx
+  newTag: "1.21"
+  
+commonAnnotations:
+  oncallPager: 800-555-1212
+
+
+configMapGenerator:
+- name: example-cm
+  files:
+  - application.properties
+generatorOptions:
+ disableNameSuffixHash: true
