@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 2
+  template: 
+    metadata:
+      labels:
+        app: nginx
+        test: test
+    spec:
+      containers:
+      - name: nginx
+        image: reg.navercorp.com/base/alpine:latest #nginx
+        command: ["/bin/ash", "-c", "sleep infinity"]        
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config
+          mountPath: /config        
+      volumes:
+      - name: config
+        configMap:
+          name: example-cm 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    #nodePort: 32211
+  selector:
+    app: nginx
+  type: ClusterIP
